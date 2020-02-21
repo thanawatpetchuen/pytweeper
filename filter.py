@@ -11,7 +11,7 @@ def make_dir(path):
 def download_image(url, image_path):
   response = requests.get(url, stream=True)
   print("Downloading... (%s)" % url)
-  with open('./images/'+image_path, 'wb+') as out_file:
+  with open('./images2/'+image_path, 'wb+') as out_file:
       shutil.copyfileobj(response.raw, out_file)
   del response
 
@@ -24,13 +24,11 @@ def mapper(d):
   except KeyError:
     return ''
 
-with open('data.json', 'r') as f:
+with open('data2.json', 'r') as f:
   data = json.load(f)
 
 mapped = list(map(mapper, data))
 merged = list(itertools.chain(*mapped))
-
-print(merged)
 
 for image in merged:
   download_image(image, image.split('/')[-1])
