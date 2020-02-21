@@ -1,0 +1,7 @@
+tweepy
+requests
+shutil
+os
+requests_oauthlib
+pickle
+webbrowser

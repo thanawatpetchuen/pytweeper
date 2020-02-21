@@ -1,19 +1,10 @@
 from tweepy.streaming import StreamListener
-from requests_oauthlib import OAuth1Session
 from tweepy import OAuthHandler
 from tweepy import Stream
 import tweepy
-import json
 import pickle
-import twitter
-import operation
-
-def print_json(json_object):
-  print(json.dumps(json_object, indent=1))
-
-def write_json(dict):
-  with open('data2.json', 'w+', encoding="utf8") as f:
-    json.dump([status._json for status in dict], f, indent=2)
+from .twitter import *
+from .operation import *
 
 def pickle_dump(x, name):
   with open(name, 'wb') as f:
@@ -28,7 +19,7 @@ class Tweeper:
     self.initialize_api()
 
   def initialize_api(self):
-    twitter_auth = twitter.TwitterAuth()
+    twitter_auth = TwitterAuth()
     key = twitter_auth.auth()
     auth = tweepy.OAuthHandler(key['consumer_key'], key['consumer_secret'])
     auth.set_access_token(key['access_token'], key['access_secret'])
@@ -62,9 +53,8 @@ def main():
   client = Tweeper()
   client.set_file('timeline', 'timeline3.pkl')
   client.get_home_timeline(page)
-  operation.read_and_download('timeline3.pkl', output)
+  read_and_download('timeline3.pkl', output)
 
 
 if __name__ == "__main__":
-  main()
   pass
