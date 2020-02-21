@@ -22,7 +22,7 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'tweepy', 'requests', 'requests_oauthlib', 
+    'tweepy', 'requests', 'requests_oauthlib', 'progress'
 ]
 
 # What packages are optional?

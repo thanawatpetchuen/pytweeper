@@ -4,6 +4,7 @@ import requests
 import shutil
 import os
 import pickle
+from progress.bar import ChargingBar
 
 def read(file):
   with open(file, 'rb') as f:
@@ -13,9 +14,8 @@ def make_dir(path):
   if not os.path.exists(path):
       os.makedirs(path)
 
-def download_image(url, image_path, percent):
+def download_image(url, image_path):
   response = requests.get(url, stream=True)
-  print("Downloading... ({url}) {percent:.2f}%".format(url=url, percent=percent))
   with open(image_path, 'wb+') as out_file:
       shutil.copyfileobj(response.raw, out_file)
   del response
@@ -45,10 +45,11 @@ def read_and_download(file, path):
   merged = list(itertools.chain(*mapped))
 
   make_dir(path)
-
+  bar = ChargingBar('Downloading', max=len(merged))
   for i, image in enumerate(merged):
-    percent = (i / len(merged)) * 100
-    download_image(image, path+image.split('/')[-1], percent)
+    download_image(image, path+image.split('/')[-1])
+    bar.next()
+  bar.finish()
 
 if __name__ == '__main__':
   print('filter file!')

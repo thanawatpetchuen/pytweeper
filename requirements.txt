@@ -5,3 +5,4 @@ os
 requests_oauthlib
 pickle
 webbrowser
+progress
