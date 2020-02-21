@@ -1,2 +1,4 @@
 images*
 *.json
+*.pkl
+__pycache__
