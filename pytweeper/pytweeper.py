@@ -5,34 +5,40 @@ from progress.bar import ChargingBar
 import tweepy
 import pickle
 import os
+from datetime import datetime
+from pathlib import Path
 from .twitter import *
 from .operation import *
+
+root_folder = Path(__file__).resolve().parent
+timeline_path = Path.joinpath(root_folder,'timeline.pkl')
+key_path = Path.joinpath(root_folder,'key.pkl')
 
 def pickle_dump(x, name):
   with open(name, 'wb') as f:
     pickle.dump([status._json for status in x], f)
 
 def save_key(key):
-  with open('key.pkl', 'wb') as f:
+  with open(key_path, 'wb') as f:
     pickle.dump(key, f)
 
 def load_key():
   try:
-    with open('key.pkl', 'rb') as f:
+    with open(key_path, 'rb') as f:
       return pickle.load(f)
   except FileNotFoundError:
     return {}
 
 def remove_access_token():
   try:
-    with open('key.pkl', 'rb') as f:
+    with open(key_path, 'rb') as f:
       key = pickle.load(f)
     del key['access_token']
     del key['access_secret']
     del key['name']
     del key['id']
     del key['error']
-    with open('key.pkl', 'wb') as f:
+    with open(key_path, 'wb') as f:
       pickle.dump(key, f)
     return True
   except FileNotFoundError:
@@ -99,7 +105,7 @@ def main():
   args = vars(parser.parse_args())
   command = args['command']
   page = args['p'] or 10
-  output = args['o'] or os.path.join(os.getcwd(), 'pytweeper','images')
+  output = args['o'] or Path.joinpath(Path.cwd(), 'pytweeper', datetime.now().strftime("%d-%m-%Y_%H_%M_%S"))
   logout = args['logout']
 
   consumer_key = None
@@ -111,14 +117,14 @@ def main():
   elif command == 'init':
     consumer_key = input("Consumer key: ")
     consumer_secret = input("Consumer secret: ")
-    with open('key.pkl', 'wb') as f:
+    with open(key_path, 'wb') as f:
       pickle.dump({ "consumer_key": consumer_key, "consumer_secret": consumer_secret }, f)
   else:
     client.initialize_api()
     if client.authorize:
-      client.set_file('timeline', 'timeline.pkl')
+      client.set_file('timeline', timeline_path)
       client.get_home_timeline(page)
-      read_and_download('timeline.pkl', output)
+      read_and_download(timeline_path, output)
 
 
 if __name__ == "__main__":
