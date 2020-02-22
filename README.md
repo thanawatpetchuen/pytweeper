@@ -9,3 +9,7 @@ A Twitter API crawler
 ```
 pytweeper -o path/to/output -p last_page
 ```
+### Arguments
+* `-o` Output directory (Optional)
+* `-p` The last page that you want to crawl
+* `--logout` For logout and get new token 

@@ -47,7 +47,7 @@ def read_and_download(file, path):
   make_dir(path)
   bar = ChargingBar('Downloading', max=len(merged))
   for i, image in enumerate(merged):
-    download_image(image, path+image.split('/')[-1])
+    download_image(image, os.path.join(path, image.split('/')[-1]))
     bar.next()
   bar.finish()
 
