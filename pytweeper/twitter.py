@@ -1,10 +1,13 @@
 from requests_oauthlib import OAuth1Session
 import webbrowser
 
+consumer_key_default ='Uu3FZb0UV4f86NOrcRXKoDWd6'
+consumer_secret_default = 'iD3J7RF5I6h4zjNy6sy610g4WwbxHW9iGfgyAQxETYSszuYoB5'
+
 class TwitterAuth:
-  def __init__(self):
-    self.consumer_key = 'Uu3FZb0UV4f86NOrcRXKoDWd6'
-    self.consumer_secret = 'iD3J7RF5I6h4zjNy6sy610g4WwbxHW9iGfgyAQxETYSszuYoB5'
+  def __init__(self, consumer_key=consumer_key_default, consumer_secret=consumer_secret_default):
+    self.consumer_key = consumer_key
+    self.consumer_secret = consumer_secret
     self.resource_owner_key = ''
     self.resource_owner_secret = ''
   
