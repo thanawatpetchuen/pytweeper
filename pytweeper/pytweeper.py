@@ -58,7 +58,6 @@ class Tweeper:
       self.authorize = False
 
   def initialize_api(self):
-    # TODO Initialize by given consumer keys
     key = load_key()
     if check_key(key, 'consumer_key') and check_key(key, 'consumer_secret'):
       self.twitter_auth.set_comsumer_keys(key['consumer_key'], key['consumer_secret'])
