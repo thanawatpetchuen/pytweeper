@@ -29,16 +29,19 @@ class TwitterAuth:
     url = 'https://api.twitter.com/oauth/access_token'
     data = {"oauth_verifier": verifier}
     access_token_data = oauth_token.post(url, data=data)
-    access_token_list = str.split(access_token_data.text, '&')
-    access_token_key = str.split(access_token_list[0], '=')
-    access_token_secret = str.split(access_token_list[1], '=')
-    access_token_name = str.split(access_token_list[3], '=')
-    access_token_id = str.split(access_token_list[2], '=')
-    key = access_token_key[1]
-    secret = access_token_secret[1]
-    name = access_token_name[1]
-    id = access_token_id[1]
-    return {"consumer_key": self.consumer_key, "consumer_secret": self.consumer_secret, "access_token": key, "access_secret": secret, "name": name, "id": id}
+    if (access_token_data.status_code == 200):
+      access_token_list = str.split(access_token_data.text, '&')
+      access_token_key = str.split(access_token_list[0], '=')
+      access_token_secret = str.split(access_token_list[1], '=')
+      access_token_name = str.split(access_token_list[3], '=')
+      access_token_id = str.split(access_token_list[2], '=')
+      key = access_token_key[1]
+      secret = access_token_secret[1]
+      name = access_token_name[1]
+      id = access_token_id[1]
+      return {"consumer_key": self.consumer_key, "consumer_secret": self.consumer_secret, "access_token": key, "access_secret": secret, "name": name, "id": id, "error": False}
+    else:
+      return {"error": "Unauthorize"}
 
   def auth(self):
     self.get_oauth_request_token()

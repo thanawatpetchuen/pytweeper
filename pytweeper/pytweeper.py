@@ -4,8 +4,8 @@ from tweepy import Stream
 from progress.bar import ChargingBar
 import tweepy
 import pickle
-from .twitter import *
-from .operation import *
+from twitter import *
+from operation import *
 
 def pickle_dump(x, name):
   with open(name, 'wb') as f:
@@ -16,15 +16,20 @@ class Tweeper:
     self.files = {
       'timeline': 'timeline.pkl'
     }
+    self.authorize = False
 
     self.initialize_api()
 
   def initialize_api(self):
     twitter_auth = TwitterAuth()
     key = twitter_auth.auth()
-    auth = tweepy.OAuthHandler(key['consumer_key'], key['consumer_secret'])
-    auth.set_access_token(key['access_token'], key['access_secret'])
-    self.api = tweepy.API(auth, wait_on_rate_limit=True)
+    if (not key['error']):
+      self.authorize = True
+      auth = tweepy.OAuthHandler(key['consumer_key'], key['consumer_secret'])
+      auth.set_access_token(key['access_token'], key['access_secret'])
+      self.api = tweepy.API(auth, wait_on_rate_limit=True)
+    else:
+      print("Unauthorize")
   
   def set_file(self, name, file):
     self.files[name] = file
@@ -53,10 +58,12 @@ def main():
   output = args['o']
   
   client = Tweeper()
-  client.set_file('timeline', 'timeline3.pkl')
-  client.get_home_timeline(page)
-  read_and_download('timeline3.pkl', output)
+  if client.authorize:
+    client.set_file('timeline', 'timeline3.pkl')
+    client.get_home_timeline(page)
+    read_and_download('timeline3.pkl', output)
 
 
 if __name__ == "__main__":
+  main()
   pass
