@@ -10,35 +10,38 @@ from pathlib import Path
 from .twitter import *
 from .operation import *
 
-root_folder = Path(__file__).resolve().parent
-timeline_path = Path.joinpath(root_folder,'timeline.pkl')
-key_path = Path.joinpath(root_folder,'key.pkl')
+TIMELINE_FILE = 'timeline.pkl'
+KEY_FILE = 'key.pkl'
+
+ROOT_FOLDER = Path(__file__).resolve().parent
+TIMELINE_PATH = Path.joinpath(ROOT_FOLDER, TIMELINE_FILE)
+KEY_PATH = Path.joinpath(ROOT_FOLDER, KEY_FILE)
 
 def pickle_dump(x, name):
   with open(name, 'wb') as f:
     pickle.dump([status._json for status in x], f)
 
 def save_key(key):
-  with open(key_path, 'wb') as f:
+  with open(KEY_PATH, 'wb') as f:
     pickle.dump(key, f)
 
 def load_key():
   try:
-    with open(key_path, 'rb') as f:
+    with open(KEY_PATH, 'rb') as f:
       return pickle.load(f)
   except FileNotFoundError:
     return {}
 
 def remove_access_token():
   try:
-    with open(key_path, 'rb') as f:
+    with open(KEY_PATH, 'rb') as f:
       key = pickle.load(f)
     del key['access_token']
     del key['access_secret']
     del key['name']
     del key['id']
     del key['error']
-    with open(key_path, 'wb') as f:
+    with open(KEY_PATH, 'wb') as f:
       pickle.dump(key, f)
     return True
   except FileNotFoundError:
@@ -54,7 +57,7 @@ def check_key(obj, key):
 class Tweeper:
   def __init__(self):
     self.files = {
-      'timeline': 'timeline.pkl'
+      'timeline': TIMELINE_FILE
     }
     self.authorize = False
     self.twitter_auth = TwitterAuth()
@@ -102,10 +105,11 @@ def main():
   parser.add_argument('-o', type=str, help='output destination')
   parser.add_argument('--logout', action='store_true', help='output destination')
 
+  today = datetime.now().strftime("%d-%m-%Y_%H_%M_%S")
   args = vars(parser.parse_args())
   command = args['command']
   page = args['p'] or 10
-  output = args['o'] or Path.joinpath(Path.cwd(), 'pytweeper', datetime.now().strftime("%d-%m-%Y_%H_%M_%S"))
+  output = Path.joinpath(Path(args['o'] or Path.cwd()).resolve(), 'pytweeper', today)
   logout = args['logout']
 
   consumer_key = None
@@ -117,14 +121,14 @@ def main():
   elif command == 'init':
     consumer_key = input("Consumer key: ")
     consumer_secret = input("Consumer secret: ")
-    with open(key_path, 'wb') as f:
+    with open(KEY_PATH, 'wb') as f:
       pickle.dump({ "consumer_key": consumer_key, "consumer_secret": consumer_secret }, f)
   else:
     client.initialize_api()
     if client.authorize:
-      client.set_file('timeline', timeline_path)
+      client.set_file('timeline', TIMELINE_PATH)
       client.get_home_timeline(page)
-      read_and_download(timeline_path, output)
+      read_and_download(TIMELINE_PATH, output)
 
 
 if __name__ == "__main__":
