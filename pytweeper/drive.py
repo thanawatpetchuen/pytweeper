@@ -60,7 +60,7 @@ class Drive:
       file_metadata = {
         "name": file_name,
       }
-    FILE_PATH = Path.joinpath(ROOT_FOLDER, file_path)
+    FILE_PATH = Path.absolute(file_path)
     media = MediaFileUpload(FILE_PATH, mimetype='image/jpeg')
     file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return file
@@ -113,6 +113,6 @@ if __name__ == "__main__":
   # print(folder)
 
   '''Check folder if exist'''
-  # d.check_folder_if_exist('pytweeper')
+  # print(d.check_folder_if_exist('pytweepers'))
   
   print("Google Drive API Module")
