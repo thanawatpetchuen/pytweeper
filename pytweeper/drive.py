@@ -65,6 +65,14 @@ class Drive:
     file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return file
 
+  def check_folder_if_exist(self, folder_name):
+    check = self.service.files().list(
+      q="name='%s' and mimeType='application/vnd.google-apps.folder'" % folder_name,
+      spaces='drive'
+    ).execute()
+    folder_list = list(map(lambda f: f['id'], check.get('files')))
+    return folder_list
+
   def create_folder(self, name, parents=None):
     if parents:
       file_metadata = {
@@ -77,7 +85,6 @@ class Drive:
         'name': name,
         'mimeType': 'application/vnd.google-apps.folder'
       }
-    print(file_metadata)
     file = self.service.files().create(body=file_metadata, fields='id').execute()
     return file
 
@@ -104,5 +111,8 @@ if __name__ == "__main__":
   '''Create folder'''
   # folder = d.create_folder('pytweeper')
   # print(folder)
+
+  '''Check folder if exist'''
+  # d.check_folder_if_exist('pytweeper')
   
   print("Google Drive API Module")
