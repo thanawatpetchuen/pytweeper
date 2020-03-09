@@ -1,1 +1,1 @@
-from .pytweeper import *
+from .main import *

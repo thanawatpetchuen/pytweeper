@@ -6,22 +6,21 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload
 
-TOKEN_FILE = 'drive/token.pkl'
-CREDENTIALS_FILE = 'drive/credentials.json'
+TOKEN_FILE = 'token.pkl'
 DRIVE_SERVICE = 'drive'
 DRIVE_SERVICE_VERSION = 'v3'
 
 ROOT_FOLDER = Path(__file__).resolve().parent
 TOKEN_PATH = Path.joinpath(ROOT_FOLDER, TOKEN_FILE)
-CREDENTIALS_PATH = Path.joinpath(ROOT_FOLDER, CREDENTIALS_FILE)
 
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly', 'https://www.googleapis.com/auth/drive.file']
 
 class Drive:
-  def __init__(self):
+  def __init__(self, creds_path):
     self.creds = None
     self.service = None
     self.folder = []
+    self.creds_path = creds_path
   
   def authenticate(self):
     if Path.exists(TOKEN_PATH):
@@ -32,7 +31,7 @@ class Drive:
         self.creds.refresh(Request())
       else:
         flow = InstalledAppFlow.from_client_secrets_file(
-          CREDENTIALS_PATH, SCOPES
+          self.creds_path, SCOPES
         )
         self.creds = flow.run_local_server(port=0)
         with open(TOKEN_PATH, 'wb') as token:

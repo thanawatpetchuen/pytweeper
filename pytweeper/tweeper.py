@@ -7,15 +7,19 @@ import pickle
 import os
 from datetime import datetime
 from pathlib import Path
+
 from .twitter import *
 from .operation import *
 
 TIMELINE_FILE = 'timeline.pkl'
 KEY_FILE = 'key.pkl'
+CREDS_FILE = 'credentials.pkl'
+G_DRIVE_NAME = 'gd_creds'
 
 ROOT_FOLDER = Path(__file__).resolve().parent
-TIMELINE_PATH = Path.joinpath(ROOT_FOLDER, TIMELINE_FILE)
 KEY_PATH = Path.joinpath(ROOT_FOLDER, KEY_FILE)
+CREDS_PATH = Path.joinpath(ROOT_FOLDER, CREDS_FILE)
+TIMELINE_PATH = Path.joinpath(ROOT_FOLDER, TIMELINE_FILE)
 
 def pickle_dump(x, name):
   with open(name, 'wb') as f:
@@ -28,6 +32,20 @@ def save_key(key):
 def load_key():
   try:
     with open(KEY_PATH, 'rb') as f:
+      return pickle.load(f)
+  except FileNotFoundError:
+    return {}
+
+def save_credentials(key, path):
+  creds = load_credentials()
+  creds[key] = Path(path)
+  with open(CREDS_PATH, 'wb') as f:
+    pickle.dump(creds, f)
+  return creds
+
+def load_credentials():
+  try:
+    with open(CREDS_PATH, 'rb') as f:
       return pickle.load(f)
   except FileNotFoundError:
     return {}
@@ -96,40 +114,3 @@ class Tweeper:
       bar.next()
     bar.finish()
     return timeline
-
-def main():
-  import argparse
-  parser = argparse.ArgumentParser(description='PyTweeper (Twitter crawler)')
-  parser.add_argument('command', nargs='?', help='command or mode')
-  parser.add_argument('-p', type=int, help='page count for crawler')
-  parser.add_argument('-o', type=str, help='output destination')
-  parser.add_argument('--logout', action='store_true', help='output destination')
-
-  today = datetime.now().strftime("%d-%m-%Y_%H_%M_%S")
-  args = vars(parser.parse_args())
-  command = args['command']
-  page = args['p'] or 10
-  output = Path.joinpath(Path(args['o'] or Path.cwd()).resolve(), 'pytweeper', today)
-  logout = args['logout']
-
-  consumer_key = None
-  consumer_secret = None
-
-  client = Tweeper()
-  if logout:
-    client.logout()
-  elif command == 'init':
-    consumer_key = input("Consumer key: ")
-    consumer_secret = input("Consumer secret: ")
-    with open(KEY_PATH, 'wb') as f:
-      pickle.dump({ "consumer_key": consumer_key, "consumer_secret": consumer_secret }, f)
-  else:
-    client.initialize_api()
-    if client.authorize:
-      client.set_file('timeline', TIMELINE_PATH)
-      client.get_home_timeline(page)
-      read_and_download(TIMELINE_PATH, output)
-
-
-if __name__ == "__main__":
-  pass

@@ -61,8 +61,8 @@ def read_and_download(file, path):
     bar.next()
   bar.finish()
 
-def read_and_upload(source, folder_name=None):
-  d = Drive()
+def read_and_upload(creds_path, source, folder_name=None):
+  d = Drive(creds_path=creds_path)
   d.authenticate()
   if type(source) == str:
     source = Path(source)
